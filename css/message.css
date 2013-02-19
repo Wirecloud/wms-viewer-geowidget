@@ -1,0 +1,29 @@
+/* MESSAGE_MANAGER*/
+
+.message {
+    background: white;
+    border: 1px solid #809DCD;
+    bottom: 0;
+    color: #444444;
+    font-family: sans-serif;
+    font-size: small;
+    height: 125px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    width: 50%;
+    z-index: 1000000;
+    padding: 5px 10px;
+    border-radius: 9px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+}
+
+.message.error {
+    border: 1px solid #C13131;
+    background: #FDE0E0;
+    color: #C13131;
+}

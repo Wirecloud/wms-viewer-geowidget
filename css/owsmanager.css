@@ -1,0 +1,455 @@
+/* LAYER SELECTOR CONTROL */
+
+.olControlOWSManager {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 0px;
+    left: auto;
+    font-family: sans-serif;
+    font-weight: bold;
+    padding: 8px 0 0 0;
+    margin: 0 -2px 0 0;
+    font-size: smaller;
+    color: #444444;
+    background-color: transparent;
+    width: 305px !important;
+}
+
+.olControlOWSManager.show {
+    display: block;
+}
+
+/* Tabs */
+
+.tab_header {
+}
+
+.tab_header .tab {
+    border-radius: 3px 10px 0 0;
+    -moz-border-radius: 3px 10px 0 0;
+    -webkit-border-radius: 3px 10px 0 0;
+    background-color: #809DCD;
+    border: 1px solid #809DCD;
+    border-bottom: none;
+    color: #D1E0F7;
+    cursor: pointer;
+    display: inline;
+    margin: 2px 2px 0;
+    padding: 3px;
+    text-decoration: none;
+}
+
+.tab_header .tab.active {
+    color: #809DCD;
+    background-color: #D1E0F7;
+}
+
+.config_button {
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    display:block;
+    width:  24px;
+    height: 24px;
+    position: absolute;
+    float: right;
+    top: 5px;
+    right: 4px;
+    cursor: pointer;
+    padding: 1px;
+    border: 1px solid #809DCD;
+    background: url("../img/button-config-bg.png") no-repeat scroll 0 0 #EEEEEE;
+    z-index: 1000;
+}
+
+.tab_header .minimize {
+    border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    -webkit-border-radius: 3px 3px 0 0;
+    background: url("../img/button-config-disabled.png") no-repeat scroll 0 0 #D1E0F7;
+    border: 1px solid #809DCD;
+    border-bottom: none;
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    height: 26px;
+    width: 26px;
+    right: 6px;
+    top: 1px;
+}
+
+.tab_container {
+    border-radius: 0 0 3px 9px;
+    -moz-border-radius: 0 0 3px 9px;
+    -webkit-border-radius: 0 0 3px 9px;
+    display: none;
+    background-color: #D1E0F7;
+    border: 1px solid #809DCD;
+    color: #444444;
+    font-weight: normal;
+    margin: 2px 6px 0 2px;
+    max-height: 250px;
+    overflow: auto;
+    padding: 3px;
+}
+
+.tab_container.active {
+    display: block;
+}
+
+/* Table */
+
+.tab_container table {
+    width: 100%;
+}
+
+.tab_container th, .tab_container td {
+    border-bottom: 1px inset #809DCD;
+    padding: 2px;
+}
+
+.tab_container th {
+    font-weight: bold;
+}
+
+.tab_container .last th, .tab_container .last td {
+    border: none;
+}
+
+/* Layers tab*/
+
+.tab_layers .overlays {
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    margin: 5px 0;
+    background-color: white;
+    border: 1px solid #809DCD;
+}
+
+.tab_layers .baselayers {
+    border-radius: 3px 8px 3px 3px;
+    -moz-border-radius: 3px 8px 3px 3px;
+    -webkit-border-radius: 3px 8px 3px 3px;
+    margin: 0 0 5px 0;
+    background-color: white;
+    border: 1px solid #809DCD;
+
+}
+
+.tab_layers .details {
+    border-radius: 3px 3px 3px 8px;
+    -moz-border-radius: 3px 3px 3px 8px;
+    -webkit-border-radius: 3px 3px 3px 8px;
+    margin: 0;
+    background-color: white;
+    border: 1px solid #809DCD;
+    height: 80px;
+    padding: 0;
+    width: auto;
+    overflow: auto;
+}
+
+.tab_layers .baselayers .header, .tab_layers .overlays .header {
+    border-radius: 2px 6px 0 0;
+    -moz-border-radius: 2px 6px 0 0;
+    -webkit-border-radius: 2px 6px 0 0;
+    display: block;
+    height: 18px;
+    position: relative;
+    background: #EEEEEE url("../img/layer-header.png") repeat-x 0 0;
+    padding: 0 5px;
+}
+
+.tab_layers .overlays .header {
+    border-radius: 2px 2px 0 0;
+    -moz-border-radius: 2px 2px 0 0;
+    -webkit-border-radius: 2px 2px 0 0;
+}
+
+.tab_layers .baselayers .container, .tab_container .overlays .container {
+    max-height: 50px;
+    min-height: 20px;
+    overflow: auto;
+}
+
+.tab_layers .layer {
+    display: block;
+    height: 20px;
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    margin: 1px 0;
+}
+
+.tab_layers .layer input {
+    float: left;
+}
+
+.tab_layers .layer span {
+    display: block;
+    float: left;
+    height: 18px;
+    overflow: hidden;
+    width: 180px;
+}
+
+.tab_layers .disabled_layer span {
+    color: #C13131;
+    text-decoration: line-through;
+}
+
+.tab_layers .layer.selected {
+    border-bottom: 1px dashed #809DCD;
+    border-top: 1px dashed #809DCD;
+    background: #D1E0F7;
+}
+
+.tab_layers .layer.highlight {
+    background: #B6DAFB;
+}
+
+.tab_layers .layer .layer_button {
+    display: none;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    cursor: pointer;
+    float: right;
+    margin: 0;
+    top: 2px;
+}
+
+.tab_layers .layer.highlight .layer_button {
+    display: block;
+}
+
+.tab_layers .layer .layer_button.up {
+    background: transparent url("../img/go-up.png") no-repeat 0 0;
+}
+
+.tab_layers .layer .layer_button.down {
+    background: transparent url("../img/go-down.png") no-repeat 0 0;
+}
+
+.tab_layers .layer .layer_button.zoom {
+    background: transparent url("../img/zoom-fit-best.png") no-repeat 0 0;
+}
+
+/*.tab_layers .disabled_layer .layer_button.zoom,*/
+.tab_layers .deselected_baselayer .layer_button.zoom {
+    visibility: hidden;
+    cursor: default;
+}
+
+.tab_layers .layer .layer_button.drop {
+    background: transparent url("../img/remove.png") no-repeat 0 0;
+}
+
+.tab_layers .details .opacity span {
+    display: block;
+    height: 16px;
+    position: relative;
+    cursor: pointer;
+    margin: 0 2px;
+    float: left;
+}
+
+.tab_layers .details .opacity .opacity_button {
+    display: block;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    cursor: pointer;
+    margin: 0px;
+    float: left;
+}
+
+.tab_layers .details .opacity .opacity_button.up {
+    background: transparent url("../img/go-next.png") no-repeat 0 0;
+}
+
+.tab_layers .details .opacity .opacity_button.down {
+    background: transparent url("../img/go-previous.png") no-repeat 0 0;
+}
+
+/* Servers tab*/
+
+.tab_servers input {
+    position: relative;
+    top: 2px;
+}
+
+.tab_servers button {
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    background: url("../img/button.png") repeat-x scroll 0 0 #EEEEEE;
+    border: 1px solid #809DCD;
+    color: #444444;
+    cursor: pointer;
+    float: right;
+    height: 22px;
+    line-height: 22px;
+    margin: 2px;
+    padding: 0 5px;
+    font-family: sans-serif;
+    font-size: small;
+    margin: 1px 0 5px;margin: 1px 0 5px;
+}
+
+.tab_servers .layer_info {
+    border-radius: 3px 3px 3px 8px;
+    -moz-border-radius: 3px 3px 3px 8px;
+    -webkit-border-radius: 3px 3px 3px 8px;
+    margin: 0;
+    background-color: white;
+    border: 1px solid #809DCD;
+    height: 80px;
+    padding: 0;
+    width: auto;
+    overflow: auto;
+    clear: both;
+}
+
+/* Marker toolbar*/
+
+.marker_toolbar {
+    position: absolute;
+    top: 5px;
+    left: 130px;
+    height: 28px;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.marker_toolbar .marker_button {
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    display:block;
+    width:  24px;
+    height: 24px;
+    position: relative;
+    float: left;
+    cursor: pointer;
+    margin-right: 2px;
+    padding: 1px;
+    border: 1px solid #809DCD;
+    background-color: #EEEEEE;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.marker_toolbar .remove_all { 
+    background-image: url("../img/button-remove-all-bg.png");
+}
+
+.marker_toolbar .remove_query { 
+    background-image: url("../img/button-remove-query-bg.png");
+}
+
+.marker_toolbar .remove_selected { 
+    background-image: url("../img/button-remove-selected-bg.png");
+}
+
+.marker_toolbar .save { 
+    background-image: url("../img/button-save-bg.png");
+}
+
+/* Cloud Popup */
+
+.olFramedCloudPopupContent  {
+    color: #444444;
+    font-size: 11px;
+}
+
+.olFramedCloudPopupContent .popup_title {
+    font-weight: bold;
+    color: #809DCD;
+    font-size: 12px;
+}
+
+/* WMS TOOLBAR CONTROL*/
+
+.olControlWMSToolbar { 
+    top: 5px;
+    left: 5px;
+    height: 28px;
+    overflow: hidden;
+}
+
+.olControlWMSToolbar div { 
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    display:block;
+    width:  24px;
+    height: 24px;
+    position: relative;
+    float: left;
+    cursor: pointer;
+    margin-right: 2px;
+    padding: 1px;
+    border: 1px solid #809DCD;
+    background-color: #EEEEEE;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.olControlWMSToolbar .olControlRichNavigationPanItemActive { 
+    background-image: url("../img/button-pan-bg.png");
+    background-color: #FFD265;
+}
+
+.olControlWMSToolbar .olControlRichNavigationPanItemInactive { 
+    background-image: url("../img/button-pan-bg.png");
+}
+
+.olControlWMSToolbar .olControlZoomBoxItemActive { 
+    background-image: url("../img/button-zoom-bg.png");
+    background-color: #FFD265;
+}
+
+.olControlWMSToolbar .olControlZoomBoxItemInactive { 
+    background-image: url("../img/button-zoom-bg.png");
+}
+
+.olControlWMSToolbar .olControlWMSQueryItemActive { 
+    background-image: url("../img/button-query-bg.png");
+    background-color: #FFD265;
+}
+
+.olControlWMSToolbar .olControlWMSQueryItemInactive { 
+    background-image: url("../img/button-query-bg.png");
+}
+
+.olControlWMSToolbar .olControlRichNavigationMarkerItemActive { 
+    background-image: url("../img/button-marker-bg.png");
+    background-color: #FFD265;
+}
+
+.olControlWMSToolbar .olControlRichNavigationMarkerItemInactive { 
+    background-image: url("../img/button-marker-bg.png");
+}
+
+/*PAN PANEL CONTROL*/
+
+.olControlPanPanel {
+    top: 35px !important;
+}
+
+/* MOUSE POSITION CONTROL*/
+.olControlMousePosition {
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    background-color: white;
+    border: 1px solid #809DCD;
+    color: #444444;
+    margin: 2px;
+    padding: 1px;
+}

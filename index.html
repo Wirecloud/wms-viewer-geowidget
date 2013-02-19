@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+        <title>Genasys</title>
+
+        <!-- Javascript Code -->
+        <script type="text/javascript" src="js/WmsWidget.js"></script>
+
+        <!-- Libraries -->
+        <script type="text/javascript" src="/ezweb/js/EzWebAPI/EzWebAPI.js"></script>
+        <script type="text/javascript" src="/ezweb/js/EzWebAPI_ext/EzWebAPI_ext.js"></script>
+        <script type="text/javascript" src="js/lib/Prototype-1.7/prototype.js"></script>
+        <script type="text/javascript" src="js/lib/proj4js-compressed.js"></script>
+        <script type="text/javascript" src="js/lib/OpenLayers-2.10/one-file/OpenLayers.js"></script>
+
+        <!-- Openlayers -->
+        <script type="text/javascript" src="js/openlayers/ClickToPan.js"></script>
+        <script type="text/javascript" src="js/openlayers/ClickToMarker.js"></script>
+        <script type="text/javascript" src="js/openlayers/RichNavigation.js"></script>
+        <script type="text/javascript" src="js/openlayers/OWSManager.js"></script>
+        <script type="text/javascript" src="js/openlayers/FeatureInfo.js"></script>
+        <script type="text/javascript" src="js/openlayers/AdvancedMarker.js"></script>
+        <script type="text/javascript" src="js/openlayers/MyScale.js"></script>
+
+        <!-- OWSManager -->
+        <script type="text/javascript" src="js/lib/OWSManager/lib/OpenLayers/Control/WMSToolbar.js"></script>
+        <script type="text/javascript" src="js/lib/OWSManager/lib/OpenLayers/Control/WMSQuery.js"></script>
+        <script type="text/javascript" src="js/lib/OWSManager/lib/OpenLayers/Control/WMSQueryTool.js"></script><!-- No se si es necesario -->
+
+        <!-- Conwet -->
+        <script type="text/javascript" src="js/conwet/events/Event.js"></script>
+        <script type="text/javascript" src="js/conwet/events/Slot.js"></script>
+        <script type="text/javascript" src="js/conwet/events/PropagableEvent.js"></script>
+        <script type="text/javascript" src="js/conwet/events/PropagableSlot.js"></script>
+
+        <!-- Genasys -->
+        <script type="text/javascript" src="js/conwet/ui/UIUtils.js"></script>
+        <script type="text/javascript" src="js/conwet/ui/MessageManager.js"></script>
+        <script type="text/javascript" src="js/conwet/ui/CursorManager.js"></script>
+        <script type="text/javascript" src="js/conwet/ui/ZoomBar.js"></script>
+        <script type="text/javascript" src="css/styledselect.js"></script>
+        <script type="text/javascript" src="js/conwet/ui/StyledOption.js"></script>
+        <script type="text/javascript" src="js/conwet/ui/StyledSelect.js"></script>
+        <script type="text/javascript" src="js/conwet/map/Projs4JsDefs.js"></script>
+        <script type="text/javascript" src="js/conwet/map/ProjectionTransformer.js"></script>
+        <script type="text/javascript" src="js/conwet/map/SelectedLayersManager.js"></script>
+        <script type="text/javascript" src="js/conwet/map/WmsLayer.js"></script>
+        <script type="text/javascript" src="js/conwet/map/OsmLayer.js"></script>
+        <script type="text/javascript" src="js/conwet/map/WmsService.js"></script>
+        <script type="text/javascript" src="js/conwet/map/WmsManager.js"></script>
+        <script type="text/javascript" src="js/conwet/map/MapManager.js"></script>
+        <script type="text/javascript" src="js/conwet/map/MarkerManager.js"></script>
+        <script type="text/javascript" src="js/conwet/Gadget.js"></script>
+
+        <!-- CSS Style -->
+        <link rel="stylesheet" type="text/css" href="css/message.css"></link>
+        <link rel="stylesheet" type="text/css" href="css/styledselect.css"></link>
+        <link rel="stylesheet" type="text/css" href="css/conwet.css"></link>
+        <link rel="stylesheet" type="text/css" href="css/owsmanager.css"></link>
+
+    </head>
+    <body onload="javascript:init();">
+        <!-- Initial HTML content -->
+        <div id="content">
+            <div id="map"></div>
+            <div id="zoom">
+                <div id="zoom_plus" class="zoom_button"></div>
+                <div id="zoom_bar">
+                    <div id="zoom_handle"></div>
+                </div>
+                <div id="zoom_minus" class="zoom_button"></div>
+            </div>
+            <div id="cursor" class="invisible"></div>
+        </div>
+        <div id="output" style="position:absolute; bottom:0; left:0;"></div>
+    </body>
+</html>
