@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Template xmlns="http://morfeo-project.org/2007/Template">
-    <!-- Gadget Meta-Info -->
+
     <Catalog.ResourceDescription>
         <Vendor>CoNWeT</Vendor>
-        <Name>Web Map Service</Name>
+        <Name>wms-viewer-geowidget</Name>
+        <DisplayName>Web Map Service</DisplayName>
         <Version>0.1</Version>
         <Author>jmostazo</Author>
         <Mail>jmostazo@fi.upm.es</Mail>
@@ -12,14 +13,6 @@
         <iPhoneImageURI>img/wms_widget.png</iPhoneImageURI>
         <WikiURI>http://hercules.ls.fi.upm.es/public/conwet/ogf.html#wms-widget</WikiURI>
     </Catalog.ResourceDescription>
-
-    <!-- EzWeb Gadgets Preferences -->
-    <Platform.Preferences>
-    </Platform.Preferences>
-
-    <!-- EzWeb Gadget Persistent State -->
-    <Platform.StateProperties>
-    </Platform.StateProperties>
 
     <Platform.Wiring>
         <Slot name="map_info_slot"       type="text" label="Map info"         friendcode="map_info"/>
@@ -39,6 +32,4 @@
 
     <Platform.Rendering width="8" height="24"/>
 
-    <Platform.Context>
-    </Platform.Context> 
 </Template>
