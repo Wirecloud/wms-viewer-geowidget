@@ -5,7 +5,7 @@
         <Vendor>CoNWeT</Vendor>
         <Name>wms-viewer-geowidget</Name>
         <DisplayName>Web Map Service</DisplayName>
-        <Version>0.1</Version>
+        <Version>0.2</Version>
         <Author>jmostazo</Author>
         <Mail>jmostazo@fi.upm.es</Mail>
         <Description> This widget gives users the ability to handle different map layers coming from several sources, showing all of them on the same map. It has a bunch of both events and slots that enables the user to have different instances of this widget wired, so she can compare with different cartographies at a glance.</Description>
