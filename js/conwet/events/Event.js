@@ -28,7 +28,6 @@ conwet.events.Event = Class.create({
 
     initialize: function(name) {
         this.name  = name;
-        this.ezVar = EzWebAPI.createRWGadgetVariable(name);
     },
 
     get: function() {
@@ -36,7 +35,7 @@ conwet.events.Event = Class.create({
     },
 
     send: function(message) {
-        this.ezVar.set(message, {'volatile': true}); //TODO Modificar EzWeb
+        MashupPlatform.wiring.pushEvent(this.name, message);
     }
 
 });

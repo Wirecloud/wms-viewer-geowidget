@@ -112,12 +112,13 @@ OpenLayers.Control.OWSManager.prototype = OpenLayers.Class.inherit(OpenLayers.Co
 
         this.tabsElements.push({"button": serversButton, "container": serversContainer});
 
-        this.serverSelect = new conwet.ui.StyledSelect({"onChange": this._sendGetCapabilities.bind(this)});
+        this.serverSelect = new StyledElements.StyledSelect();
+        this.serverSelect.addEventListener('change', this._sendGetCapabilities.bind(this));
         this.serverSelect.insertInto(serversContainer);
-        this.serverSelect.addOption(_('Select a server'), '', {"selected": true});
+        this.serverSelect.addEntries([[_('Select a server'), '']]);
 
         for (var i = 0; i < this.initialServers.length; i++) {
-            this.serverSelect.addOption(this.initialServers[i][0], this.initialServers[i][1], {"removable": true});
+            this.serverSelect.addEntries([[this.initialServers[i][0], this.initialServers[i][1]]]);
         }
 
         this.serverForm = document.createElement("div");
@@ -158,7 +159,9 @@ OpenLayers.Control.OWSManager.prototype = OpenLayers.Class.inherit(OpenLayers.Co
         this.gadget.showMessage(_("Nuevo servidor añadido."));
     },
 
-    _sendGetCapabilities: function (baseURL) {
+    _sendGetCapabilities: function (select) {
+        var baseURL = select.getValue();
+
         if (this.serverForm) {
             this.serverForm.innerHTML = "";
         }
@@ -177,17 +180,15 @@ OpenLayers.Control.OWSManager.prototype = OpenLayers.Class.inherit(OpenLayers.Co
         baseURL += "&service=WMS&version=1.1.1&request=GetCapabilities";
 
         //TODO Gif chulo para esperar
-        EzWebAPI.send_get(
-            baseURL,
-            this,
-            function(response) {
+        MashupPlatform.http.makeRequest(baseURL, {
+            onSuccess: function(response) {
                 this.gadget.hideMessage();
                 this._parseGetCapabilities(baseURL, response);
             }.bind(this),
-            function(){
+            onFailure: function(){
                 this.gadget.showError(_("El servidor no responde."));
-            }
-        );
+            }.bind(this)
+        });
     },
 
     _parseGetCapabilities: function (baseURL, ajaxResponse) {
@@ -260,14 +261,16 @@ OpenLayers.Control.OWSManager.prototype = OpenLayers.Class.inherit(OpenLayers.Co
         $(infoDiv).addClassName("layer_info");
 
         // Projection select
-        var projectionSelect = new conwet.ui.StyledSelect();
+        var projectionSelect = new StyledElements.StyledSelect();
         projectionSelect.addClassName("no_display");
 
         // Image type select
-        var imageFormatSelect = new conwet.ui.StyledSelect();
+        var imageFormatSelect = new StyledElements.StyledSelect();
 
         // Layer select
-        var layerSelect = new conwet.ui.StyledSelect({"onChange": function (layer) {
+        var layerSelect = new StyledElements.StyledSelect({idFun: function (layer) { return layer.getName(); }});
+        layerSelect.addEventListener('change', function (select) {
+            var layer = select.getValue();
             var layerInfo = service.getLayer(layer.getName());
             infoDiv.innerHTML = "";
 
@@ -293,21 +296,21 @@ OpenLayers.Control.OWSManager.prototype = OpenLayers.Class.inherit(OpenLayers.Co
 
             projectionSelect.clear();
             imageFormatSelect.clear();
-            this._addProjections(projectionSelect, layerSelect.getSelectedValue().getProjections());
+            this._addProjections(projectionSelect, layerSelect.getValue().getProjections());
             this._addFormats(imageFormatSelect, layer.getFormats());
-        }.bind(this)});
+        }.bind(this));
 
         var layers = service.getLayers();
         for (var i=0; i<layers.length; i++) {
             var layer = layers[i];
-            layerSelect.addOption(layer.getTitle()  + ((layer.isQueryable())? _(' (q)'): ''), layer);
+            layerSelect.addEntries([[layer.getTitle()  + ((layer.isQueryable())? _(' (q)'): ''), layer]]);
         }
 
         // Add porjections
-        this._addProjections(projectionSelect, layerSelect.getSelectedValue().getProjections());
+        this._addProjections(projectionSelect, layerSelect.getValue().getProjections());
 
         // Add formats
-        this._addFormats(imageFormatSelect, layerSelect.getSelectedValue().getFormats());
+        this._addFormats(imageFormatSelect, layerSelect.getValue().getFormats());
 
         // Base layer checkbox
         var baseLayerButton = document.createElement('input');
@@ -331,10 +334,10 @@ OpenLayers.Control.OWSManager.prototype = OpenLayers.Class.inherit(OpenLayers.Co
         var addButton = document.createElement('button');
         $(addButton).observe("mousedown", function() {
             this._addWMSLayer(
-                this.serverSelect.getSelectedValue(),
-                layerSelect.getSelectedValue(),
-                projectionSelect.getSelectedValue(),
-                imageFormatSelect.getSelectedValue(),
+                this.serverSelect.getValue(),
+                layerSelect.getValue(),
+                projectionSelect.getValue(),
+                imageFormatSelect.getValue(),
                 baseLayerButton.checked
             );
         }.bind(this));
@@ -354,7 +357,7 @@ OpenLayers.Control.OWSManager.prototype = OpenLayers.Class.inherit(OpenLayers.Co
         select.clear();
         for (var i=0; i<projections.length; i++) {
             //if (projections[i] in Proj4js.defs) {
-                select.addOption(projections[i], projections[i]);
+                select.addEntries([[projections[i], projections[i]]]);
             //}
         }
     },
@@ -362,7 +365,7 @@ OpenLayers.Control.OWSManager.prototype = OpenLayers.Class.inherit(OpenLayers.Co
     _addFormats: function(select, formats) {
         select.clear();
         for (var i=0; i<formats.length; i++) {
-            select.addOption(formats[i], formats[i]);
+            select.addEntries([[formats[i], formats[i]]]);
         }
     },
 

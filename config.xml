@@ -15,15 +15,15 @@
     </Catalog.ResourceDescription>
 
     <Platform.Wiring>
-        <Slot name="map_info_slot"       type="text" label="Map info"         friendcode="map_info"/>
-        <Slot name="wms_service_slot"    type="text" label="WMS info"         friendcode="service_info"/>
-        <Slot name="location_slot"       type="text" label="Location"         friendcode="location"/>
-        <Slot name="location_info_slot"  type="text" label="Location info"    friendcode="location_info"/>
+        <InputEndpoint name="map_info_slot"       type="text" label="Map info"         friendcode="map_info"/>
+        <InputEndpoint name="wms_service_slot"    type="text" label="WMS info"         friendcode="service_info"/>
+        <InputEndpoint name="location_slot"       type="text" label="Location"         friendcode="location"/>
+        <InputEndpoint name="location_info_slot"  type="text" label="Location info"    friendcode="location_info"/>
 
-        <Event name="map_info_event"     type="text" label="Map info"         friendcode="map_info"/>
-        <Event name="location_event"     type="text" label="Location LongLat" friendcode="location"/>
-        <Event name="center_event"       type="text" label="Center LongLat"   friendcode="location"/>
-        <Event name="feature_info_event" type="text" label="Feature info"     friendcode="feature_info"/>
+        <OutputEndpoint name="map_info_event"     type="text" label="Map info"         friendcode="map_info"/>
+        <OutputEndpoint name="location_event"     type="text" label="Location LongLat" friendcode="location"/>
+        <OutputEndpoint name="center_event"       type="text" label="Center LongLat"   friendcode="location"/>
+        <OutputEndpoint name="feature_info_event" type="text" label="Feature info"     friendcode="feature_info"/>
     </Platform.Wiring>
 
     <Platform.Link>

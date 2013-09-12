@@ -190,7 +190,7 @@ conwet.map.SelectedLayersManager = Class.create({
 
                     var parentElement =layerObj. layerElement.parentNode;
                     var previousElement = parentElement.children[nLayers-nMarkers-1-index];
-                    EzWebExt.removeFromParent(layerObj.layerElement);
+                    layerObj.layerElement.remove();
                     parentElement.insertBefore(layerObj.layerElement, previousElement);
                     layerObj.layerElement.removeClassName("highlight");
                 }.bind(this));
@@ -215,11 +215,11 @@ conwet.map.SelectedLayersManager = Class.create({
                     var parentElement = layerObj.layerElement.parentNode;
                     if (nLayers-nMarkers-index < parentElement.children.length) {
                         var nextElement = parentElement.children[nLayers-nMarkers-index];
-                        EzWebExt.removeFromParent(layerObj.layerElement);
+                        layerObj.layerElement.remove();
                         parentElement.insertBefore(layerObj.layerElement, nextElement);
                     }
                     else {
-                        EzWebExt.removeFromParent(layerObj.layerElement);
+                        layerObj.layerElement.remove();
                         parentElement.appendChild(layerObj.layerElement);
                     }
 
@@ -399,7 +399,7 @@ conwet.map.SelectedLayersManager = Class.create({
             this._clearDetails();
         }
 
-        EzWebExt.removeFromParent(layerObj.layerElement);
+        layerObj.layerElement.remove();
     },
 
     _deselectAllLayers: function() {

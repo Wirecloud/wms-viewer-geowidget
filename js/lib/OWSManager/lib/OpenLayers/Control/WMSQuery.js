@@ -116,16 +116,15 @@ OpenLayers.Control.WMSQuery = OpenLayers.Class(OpenLayers.Control, {
                     VERSION: serviceInfo.getVersion()
                 });
 
-                EzWebAPI.send_get(
-                    url,
-                    this,
-                    function(transport){
+                MashupPlatform.http.makeRequest(url, {
+                    method: 'GET',
+                    onSuccess: function(transport) {
                         var text = transport.responseText;
                         this.self.requested++;
                         this.self.setOutput(this, text);
-                    }.bind(context),
-                    function(){} //TODO On Error
-                );
+                    }.bind(context)
+                    //TODO On Failure
+                });
             }
         }
 

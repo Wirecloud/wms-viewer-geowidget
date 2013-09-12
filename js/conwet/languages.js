@@ -31,10 +31,8 @@ var languages = {
     }
 };
 
-var language = EzWebAPI.createRGadgetVariable('language', EzWebExt.bind(function(){}, this));
-
 var _ = function(key) {
-    var lang = language.get();
+    var lang = MashupPlatform.context.get('language');
     if (languages[lang] && languages[lang][key]) {
         return languages[lang][key];
     }

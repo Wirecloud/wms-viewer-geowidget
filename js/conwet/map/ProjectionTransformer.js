@@ -79,7 +79,7 @@ conwet.map.ProjectionTransformer = Class.create({
             var srs = srs = proj.toLowerCase().split(':').join('/');
             var url = this.PROJECTIONS_SERVER_URL + srs + '/proj4js/';
 
-            var projDef = EzWebAPI.send(url, this, options);
+            var projDef = MashupPlatform.http.makeRequest(url, options);
             eval(projDef.transport.responseText + "alert(" + projDef.transport.responseText + ");");
         }
         catch (e) {

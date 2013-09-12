@@ -32,10 +32,6 @@ conwet.events.PropagableSlot = Class.create(conwet.events.Slot, {
         this.lastEventId = 0;
     },
 
-    get: function($super) {
-        return this._unpackageEvent($super().evalJSON());
-    },
-
     addEvent: function(event) {
         // Only for PropagableEvent
         this.events.push(event);
@@ -60,7 +56,7 @@ conwet.events.PropagableSlot = Class.create(conwet.events.Slot, {
 
     _isDisposableEvent: function(message) {
         if ((typeof message == 'object') && ('eventId' in message) && ('gadgetId' in message)) {
-            return (message['eventId'] <= this.lastEventId) || (message['gadgetId'] == EzWebAPI.getId());
+            return (message['eventId'] <= this.lastEventId) || (message['gadgetId'] == MashupPlatform.widget.id);
         }
         return false;
     },

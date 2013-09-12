@@ -27,8 +27,6 @@ use("conwet");
 conwet.Gadget = Class.create({
 
     initialize: function() {
-        // EzWeb Events
-        this.locationEvent     = new conwet.events.Event('location_event');
         this.centerEvent       = new conwet.events.Event('center_event');
         this.featureInfoEvent  = new conwet.events.Event('feature_info_event');
         this.gadgetInfoEvent   = new conwet.events.PropagableEvent('map_info_event');
@@ -118,7 +116,7 @@ conwet.Gadget = Class.create({
     },
 
     sendLocation: function(lon, lat) {
-        this.locationEvent.send(lon + "," + lat);
+        MashupPlatform.wiring.pushEvent('location_event', lon + "," + lat);
     },
 
     setMarker: function(lonlat) {

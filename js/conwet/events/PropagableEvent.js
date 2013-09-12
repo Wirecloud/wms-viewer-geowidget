@@ -40,7 +40,7 @@ conwet.events.PropagableEvent = Class.create(conwet.events.Event, {
     _packageEvent: function(message) {
         message = {
             'eventId'    : (new Date()).getTime(),
-            'gadgetId'   : EzWebAPI.getId(),
+            'gadgetId'   : MashupPlatform.widget.id,
             'eventValue' : message
         };
         return Object.toJSON(message);
