@@ -41,17 +41,19 @@ OpenLayers.AdvancedMarker = OpenLayers.Class(OpenLayers.Marker, {
         this.onClick       = onClick;
         this.lon           = lonlat.lon;
         this.lat           = lonlat.lat;
-        this.transformer   = new conwet.map.ProjectionTransformer();
-
+        this.lonlat = lonlat;
+        this.transformer   = new conwet.map.ProjectionTransformer(map);
+        
+        //lonlat = this.transformer.transform(lonlat);
         OpenLayers.Marker.prototype.initialize.apply(this, [lonlat, this._createIcon()]);
 
         this.events.register('click', this, this._onClick.bind(this));
         $(this.icon.imageDiv).addClassName("marker");
 
-        this.icon.imageDiv.title = lonlat.lon + ", " + lonlat.lat;
+        this.icon.imageDiv.title = this.lon + ", " + this.lat;
 
         this._upOpacity();
-        this.timeOut = setTimeout(this._downOpacity.bind(this), 5000);
+        this.timeOut = setTimeout(this._downOpacity.bind(this), 5000);        
     },
 
     _onClick: function(e) {

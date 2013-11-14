@@ -165,3 +165,8 @@ html, body {
 .olLayerGoogleCopyright {
     display: none !important;
 }
+
+#servDiv select, #servDiv button{
+    max-width: 240px;
+    float: left;
+}

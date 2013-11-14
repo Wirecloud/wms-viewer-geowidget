@@ -21,9 +21,7 @@
  *     <http://www.gnu.org/licenses/gpl.txt>.
  *
  */
-
-OpenLayers.Control.FeatureInfo = OpenLayers.Class.create();
-OpenLayers.Control.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.Control, {
+OpenLayers.Control.FeatureInfo = OpenLayers.Class(OpenLayers.Control, {   
 
     /**
      * @constructor

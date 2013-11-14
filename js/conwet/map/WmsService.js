@@ -27,11 +27,11 @@ use("conwet.map");
 conwet.map.WmsService = Class.create({
 
     initialize: function(xml) {
-        this.wms = (new OpenLayers.Format.WMSCapabilities()).read(xml);
+        this.wms = (new OpenLayers.Format.WMSCapabilities().read(xml));
         this.layers = $H();
 
-        for (var i = 0; i < this.wms.capability.layers.length; i++) {
-            this.addLayer(this.wms.capability.layers[i]);
+        for (var i = 0; i < this.wms.capability.nestedLayers.length; i++) {            
+            this.addLayer(new conwet.map.WmsLayer(this.wms.capability.nestedLayers[i], this.wms.version,[]));
         }
 
     },
@@ -81,7 +81,11 @@ conwet.map.WmsService = Class.create({
     },
 
     addLayer: function(layer) {
-        this.layers.set(layer.name, new conwet.map.WmsLayer(layer));
+        this.layers.set(layer.getName(), layer);
+        
+        for (var i = 0; i < layer.nestedLayers.length; i++) {
+            this.addLayer(layer.nestedLayers[i]);
+        }
     },
 
     removeLayer: function(name) {

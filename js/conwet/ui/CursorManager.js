@@ -25,11 +25,10 @@
 use('conwet.ui');
 
 conwet.ui.CursorManager = Class.create({
-
     initialize: function(options) {
         //HTML Elements
         this.contentElement = $('content');
-        this.cursorElement  = $('cursor');
+        this.cursorElement = $('cursor');
 
         //Options
         if (arguments.length > 0) {
@@ -43,29 +42,43 @@ conwet.ui.CursorManager = Class.create({
 
         // HTML Events
         this._move = this._move.bind(this)
-        this.enableEvents();
+        //this.enableEvents();
+        this.enabled = false;
 
         // Init
-        this.updateState({'focus' : true});
-    },
+        this.updateState({'focus': true});
 
+    },
     enableEvents: function() {
-        this.contentElement.observe('mousemove', this._move);
-        this.contentElement.observe('mouseout',  this._onBlur);
-    },
+        if (!this.enabled) {
+            if (this.map != null)
+                this.map.events.register('mousemove', this, this._move);
+            if (this.map != null)
+                this.map.events.register('mouseout', this, this._onBlur);
 
+            this.contentElement.addEventListener('mousemove', this._move);
+            this.contentElement.addEventListener('mouseout', this._onBlur);
+            this.enabled = true;
+        }
+    },
     disableEvents: function() {
-        this.contentElement.stopObserving('mousemove', this._move);
-        this.contentElement.stopObserving('mouseout',  this._onBlur);
+         if (this.enabled) {
+            if (this.map != null)
+                this.map.events.unregister('mousemove', this, this._move);
+            if (this.map != null)
+                this.map.events.unregister('mousemove', this, this._move);
+            this.contentElement.removeEventListener('mousemove', this._move);
+            this.contentElement.removeEventListener('mouseout', this._onBlur);
+            this.enabled = false;
+        }
     },
-
     updateState: function(state) {
         if ('cursor' in state) {
-            var deltaX = /*Math.floor(this.contentElement.offsetWidth  / 2)*/ - Math.floor(this.cursorElement.offsetWidth / 2);
-            var deltaY = /*Math.floor(this.contentElement.offsetHeight / 2)*/ - Math.floor(this.cursorElement.offsetHeight / 2);
+            var deltaX = /*Math.floor(this.contentElement.offsetWidth  / 2)*/ -Math.floor(this.cursorElement.offsetWidth / 2);
+            var deltaY = /*Math.floor(this.contentElement.offsetHeight / 2)*/ -Math.floor(this.cursorElement.offsetHeight / 2);
 
             this.cursorElement.style.left = (state.cursor.x + deltaX) + 'px';
-            this.cursorElement.style.top  = (state.cursor.y + deltaY) + 'px';
+            this.cursorElement.style.top = (state.cursor.y + deltaY) + 'px';
         }
         if ('focus' in state) {
             if (state.focus) {
@@ -76,21 +89,21 @@ conwet.ui.CursorManager = Class.create({
             }
         }
     },
-
     _move: function(e) {
         var deltaX = 0;//Math.floor(this.contentElement.offsetWidth  / 2);
         var deltaY = 0;//Math.floor(this.contentElement.offsetHeight / 2);
 
-        this.updateState({'focus' : true});
+        this.updateState({'focus': true});
         this._onMove(e.pointerX() - deltaX, e.pointerY() - deltaY);
     },
-
     _onBlur: function() {
         // To overwrite
     },
-
     _onMove: function(x, y) {
         // To overwrite
+    },
+    setMap: function(map) {
+        this.map = map;
+        this.enableEvents();
     }
-
 });

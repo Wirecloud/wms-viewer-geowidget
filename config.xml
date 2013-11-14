@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Template xmlns="http://morfeo-project.org/2007/Template">
+<Template xmlns="http://wirecloud.conwet.fi.upm.es/ns/template#">
 
     <Catalog.ResourceDescription>
         <Vendor>CoNWeT</Vendor>
         <Name>wms-viewer-geowidget</Name>
         <DisplayName>Web Map Service</DisplayName>
-        <Version>0.2</Version>
+        <Version>0.4.4</Version>
         <Author>jmostazo</Author>
         <Mail>jmostazo@fi.upm.es</Mail>
         <Description> This widget gives users the ability to handle different map layers coming from several sources, showing all of them on the same map. It has a bunch of both events and slots that enables the user to have different instances of this widget wired, so she can compare with different cartographies at a glance.</Description>
@@ -13,6 +13,10 @@
         <iPhoneImageURI>img/wms_widget.png</iPhoneImageURI>
         <WikiURI>http://hercules.ls.fi.upm.es/public/conwet/ogf.html#wms-widget</WikiURI>
     </Catalog.ResourceDescription>
+    
+    <Platform.StateProperties>
+        <Property name="services" type="text" label="Services"/>
+    </Platform.StateProperties>
 
     <Platform.Wiring>
         <InputEndpoint name="map_info_slot"       type="text" label="Map info"         friendcode="map_info"/>
@@ -24,6 +28,8 @@
         <OutputEndpoint name="location_event"     type="text" label="Location LongLat" friendcode="location"/>
         <OutputEndpoint name="center_event"       type="text" label="Center LongLat"   friendcode="location"/>
         <OutputEndpoint name="feature_info_event" type="text" label="Feature info"     friendcode="feature_info"/>
+        <OutputEndpoint name="legend_url"         type="text" label="Url de leyenda"   friendcode="url"/>
+
     </Platform.Wiring>
 
     <Platform.Link>

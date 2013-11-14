@@ -28,11 +28,17 @@ conwet.events.Slot = Class.create({
 
     initialize: function(name, handler) {
         this.name    = name;
+        this.lastname = null;
         this.handler = handler;
-        MashupPlatform.wiring.registerCallback(this.name, this._handler.bind(this));
+        MashupPlatform.wiring.registerCallback(name, this._handler.bind(this));
+    },
+
+    get: function() {
+        return this.lastname;
     },
 
     _handler: function(message) {
+        this.lastname = this.name;
         this.handler(message);
     }
 

@@ -26,15 +26,17 @@ use('conwet.events');
 
 conwet.events.Event = Class.create({
 
-    initialize: function(name) {
+   initialize: function(name) {
         this.name  = name;
+        this.lastname = null;
     },
 
     get: function() {
-        return this.ezVar.get();
+        return this.lastname;
     },
 
     send: function(message) {
+        this.lastname = this.name;
         MashupPlatform.wiring.pushEvent(this.name, message);
     }
 

@@ -25,7 +25,6 @@
 use("conwet.map");
 
 conwet.map.SelectedLayersManager = Class.create({
-
     initialize: function(map, wmsManager, mapManager, parentElement) {
         this.map = map;
         this.parentElement = parentElement;
@@ -37,15 +36,14 @@ conwet.map.SelectedLayersManager = Class.create({
         this.MIN_OPACITY = 0.1;
 
         this.baseLayers = [];
-        this.overlays   = [];
+        this.overlays = [];
 
         this.baseLayersContainer = null;
-        this.overlaysContainer   = null;
-        this.detailsContainer    = null;
+        this.overlaysContainer = null;
+        this.detailsContainer = null;
 
         this._draw();
     },
-
     _draw: function() {
         var baseLayersElement = document.createElement("div");
         $(baseLayersElement).addClassName("baselayers");
@@ -77,17 +75,20 @@ conwet.map.SelectedLayersManager = Class.create({
         $(this.detailsContainer).addClassName("details");
         this.parentElement.appendChild(this.detailsContainer);
     },
-
-    addLayer: function(layer, projection, isBaseLayer, init) {
+    addLayer: function(layer, projection, isBaseLayer, init, last) {
         var layerObj = null;
-        var list     = (isBaseLayer)? this.baseLayers: this.overlays;
-        var index    = this._getLayerIndex(layer, isBaseLayer);
-        var isOsm      = (layer.CLASS_NAME == "OpenLayers.Layer.OSM");
+        var list = (isBaseLayer) ? this.baseLayers : this.overlays;
+        var index = this._getLayerIndex(layer, isBaseLayer);
+        var isOsm = (layer.CLASS_NAME == "OpenLayers.Layer.OSM");
+        var isGoogle = (layer.CLASS_NAME == "OpenLayers.Layer.Google")
 
         if (index < 0) {
             var layerInfo = null;
             if (isOsm) {
-                layerInfo  = new conwet.map.OsmLayer(layer);
+                layerInfo = new conwet.map.OsmLayer(layer);
+            }
+            else if (isGoogle) {
+                layerInfo = new conwet.map.GoogleLayer(layer);
             }
             else {
                 var service = this.wmsManager.getService(layer.url);
@@ -96,12 +97,15 @@ conwet.map.SelectedLayersManager = Class.create({
 
             var layerElement = document.createElement("div");
             $(layerElement).addClassName("layer");
+
             layerElement.observe("click", function(e) {
                 this._selectLayerObj(layerObj, isBaseLayer);
             }.bind(this));
+
             layerElement.observe("mouseover", function(e) {
                 layerElement.addClassName("highlight");
             }.bind(this), false);
+
             layerElement.observe("mouseout", function(e) {
                 layerElement.removeClassName("highlight");
             }.bind(this), false);
@@ -109,8 +113,8 @@ conwet.map.SelectedLayersManager = Class.create({
             var zoomButton = document.createElement("div");
             $(zoomButton).addClassName('layer_button');
             $(zoomButton).addClassName('zoom');
-            zoomButton.observe("click", function (e) {
-                this._zoomToExtent(layerObj.layerInfo);
+            zoomButton.observe("click", function(e) {
+                this._zoomToLayerExtent(layerObj.layerInfo);
             }.bind(this));
             zoomButton.title = _('Zoom to extent');
 
@@ -123,22 +127,29 @@ conwet.map.SelectedLayersManager = Class.create({
                 inputElement.type = "checkbox";
             }
 
+            var resolutions = null;
+            if (layer.params != null) {
+                resolutions = layer.params.RESOLUTIONS;
+            }
+
             layerObj = {
-                "layer"       : layer,
-                "layerElement": layerElement,
-                "inputElement": inputElement,
-                "zoomElement" : zoomButton,
-                "layerInfo"   : layerInfo,
-                "projection"  : projection
+                layer: layer,
+                layerElement: layerElement,
+                inputElement: inputElement,
+                zoomElement: zoomButton,
+                layerInfo: layerInfo,
+                projection: projection,
+                resolutions: resolutions
             };
 
             inputElement.observe("mousedown", function(e) {
-                if (inputElement.type == "radio") {
-                    this._changeBaseLayer(layerObj);
-                    this._zoomToExtent(layerObj.layerInfo);
-                } else {
-                    layerObj.inputElement.checked = !layerObj.inputElement.checked;
-                    layerObj.layer.setVisibility(layerObj.inputElement.checked, true);
+                if (inputElement.disabled == false) {
+                    if (inputElement.type == "radio") {
+                        this._changeBaseLayer(layerObj);
+                    } else {
+                        layerObj.inputElement.checked = (!layerObj.inputElement.checked);
+                    }
+                    this._disableOverlays();
                 }
                 e.stop();
             }.bind(this));
@@ -146,11 +157,11 @@ conwet.map.SelectedLayersManager = Class.create({
             layerElement.appendChild(inputElement);
 
             var nameElement = document.createElement("span");
-            nameElement.appendChild(document.createTextNode(layerInfo.getTitle() + ((layerInfo.isQueryable())? _(" (q)"): "")));
+            nameElement.appendChild(document.createTextNode(layerInfo.getTitle() + ((layerInfo.isQueryable()) ? _(" (q)") : "")));
             nameElement.title = layerInfo.getTitle();
             layerElement.appendChild(nameElement);
 
-            if (!isOsm) {
+            if (!isOsm && !isGoogle) {
                 var dropButton = document.createElement("div");
                 $(dropButton).addClassName('layer_button');
                 $(dropButton).addClassName('drop');
@@ -159,7 +170,7 @@ conwet.map.SelectedLayersManager = Class.create({
                     this._dropLayerObj(layerObj, isBaseLayer);
                     if (isBaseLayer && (!layerObj.layerElement.hasClassName("deselected_baselayer"))) {
                         this._changeBaseLayer(this.baseLayers[0]);
-                        this._zoomToExtent(this.baseLayers[0].layerInfo);
+                        this._zoomToLayerExtent(this.baseLayers[0].layerInfo);
                     }
                 }.bind(this));
                 dropButton.title = _("Remove layer");
@@ -177,19 +188,19 @@ conwet.map.SelectedLayersManager = Class.create({
                 $(upButton).addClassName('layer_button');
                 $(upButton).addClassName("up");
                 upButton.observe("click", function(e) {
-                    var index    = this.map.getLayerIndex(layerObj.layer);
-                    var nLayers  = this.map.getNumLayers();
-                    var nBases   = this._getNumBaseLayers();
+                    var index = this.map.getLayerIndex(layerObj.layer);
+                    var nLayers = this.map.getNumLayers();
+                    var nBases = this._getNumBaseLayers();
                     var nMarkers = this.mapManager.getNumMarkerLayers();
 
-                    if (index >= (nLayers-nMarkers-1))
+                    if (index >= (nLayers - nMarkers - 1))
                         return;
 
                     this.map.raiseLayer(layerObj.layer, 1);
                     index = this.map.getLayerIndex(layerObj.layer);
 
-                    var parentElement =layerObj. layerElement.parentNode;
-                    var previousElement = parentElement.children[nLayers-nMarkers-1-index];
+                    var parentElement = layerObj.layerElement.parentNode;
+                    var previousElement = parentElement.children[nLayers - nMarkers - 1 - index];
                     layerObj.layerElement.remove();
                     parentElement.insertBefore(layerObj.layerElement, previousElement);
                     layerObj.layerElement.removeClassName("highlight");
@@ -201,9 +212,9 @@ conwet.map.SelectedLayersManager = Class.create({
                 $(downButton).addClassName('layer_button');
                 $(downButton).addClassName("down");
                 downButton.observe("click", function(e) {
-                    var index    = this.map.getLayerIndex(layerObj.layer);
-                    var nLayers  = this.map.getNumLayers();
-                    var nBases   = this._getNumBaseLayers();
+                    var index = this.map.getLayerIndex(layerObj.layer);
+                    var nLayers = this.map.getNumLayers();
+                    var nBases = this._getNumBaseLayers();
                     var nMarkers = this.mapManager.getNumMarkerLayers();
 
                     if (index <= nBases)
@@ -213,8 +224,8 @@ conwet.map.SelectedLayersManager = Class.create({
                     index = this.map.getLayerIndex(layerObj.layer);
 
                     var parentElement = layerObj.layerElement.parentNode;
-                    if (nLayers-nMarkers-index < parentElement.children.length) {
-                        var nextElement = parentElement.children[nLayers-nMarkers-index];
+                    if (nLayers - nMarkers - index < parentElement.children.length) {
+                        var nextElement = parentElement.children[nLayers - nMarkers - index];
                         layerObj.layerElement.remove();
                         parentElement.insertBefore(layerObj.layerElement, nextElement);
                     }
@@ -238,12 +249,23 @@ conwet.map.SelectedLayersManager = Class.create({
                 parentElement.appendChild(layerElement);
             }
 
-            if (isBaseLayer) {
-                this._changeMapProjection(layerInfo, projection);
+            var isWmsc = false;
+            if (isBaseLayer) {                
+                
+                if (layerObj.resolutions != null) {
+                    this.map.scales = null;
+                    this.map.resolutions = layerObj.resolutions;
+                    this.map.maxResolution = layerObj.resolutions[0];
+                    this.map.minResolution = layerObj.resolutions[layerObj.resolutions.length - 1];
+                    
+                    isWmsc = true;
+                }
+
+                this._changeMapProjection(layerInfo, projection, isWmsc);
             }
 
             layerObj.projection = this.map.projection;
-            this._setExtent(layer, layerInfo, layerObj.projection, isBaseLayer);
+            this._setExtent(layer, layerInfo, layerObj.projection, isWmsc);
             this.map.addLayer(layer);
 
             if (isBaseLayer) {
@@ -252,16 +274,19 @@ conwet.map.SelectedLayersManager = Class.create({
                 this._selectBaseLayerElement(layerObj.layerElement);
                 this._updateOverlaysProjection(layerObj.projection);
                 this.map.events.triggerEvent("changebaselayer");
+                if (!init || last)
+                    layerObj.inputElement.checked = true;
             }
             else {
-                this.map.setLayerIndex(layer, this.map.getNumLayers()-this.mapManager.getNumMarkerLayers()-1);
+                this.map.setLayerIndex(layer, this.map.getNumLayers() - this.mapManager.getNumMarkerLayers() - 1);
+                layerObj.inputElement.checked = true;
             }
 
             list.push(layerObj);
             this._disableOverlays();
-            layerObj.inputElement.checked = true;
+
             if (!init)
-                this.gadget.showMessage((isBaseLayer)? _("Nueva capa base."): _("Nueva capa."));
+                this.gadget.showMessage((isBaseLayer) ? _("Nueva capa base.") : _("Nueva capa."));
         }
         else {
             layerObj = list[index];
@@ -270,57 +295,69 @@ conwet.map.SelectedLayersManager = Class.create({
         }
 
         this._selectLayerObj(layerObj, isBaseLayer);
-
         // Set Extent
-        if (isBaseLayer) {
+        if (isBaseLayer && (!init || last)) {
             // Para evitar fallo con OSM
-            setTimeout(function() {this._zoomToExtent(layerObj.layerInfo);}.bind(this), 1000);
+            setTimeout(function() {
+                this._zoomToExtent();
+                this._zoomToLayerExtent(layerObj.layerInfo);
+            }.bind(this), 1000);
         }
     },
+    _setExtent: function(layer, layerInfo, projection, isWmsc) {
 
-    _setExtent: function(layer, layerInfo, projection, isBaseLayer) {
+        // layer.maxExtent = layerInfo.getExtent(layer.projection, projection);
         layer.projection = projection;
-        layer.units      = new OpenLayers.Projection(projection).getUnits();
-        layer.maxExtent  = layerInfo.getExtent(projection);
-
-        if ((layer.CLASS_NAME == "OpenLayers.Layer.OSM") || (!isBaseLayer && (this.map.baseLayer.CLASS_NAME == "OpenLayers.Layer.OSM"))) {
-            layer.maxExtent  = null;
-        }
-        else {
+        layer.units = new OpenLayers.Projection(projection).getUnits();
+        if (isWmsc){
+            layer.maxExtent = layerInfo.getMaxExtent(projection);
+        }else
             layer.maxExtext = layerInfo.getExtent(projection);
-        }
-        //layer.maxResolution = "auto";
-        //layer.minResolution = "auto";
     },
-
     _changeBaseLayer: function(layerObj) {
+
         layerObj.inputElement.checked = true;
-        this._changeMapProjection(layerObj.layerInfo, layerObj.projection);
+        var newcenter;
+        //var oldproj = this.map.projection;
+        var oldZoom = this.map.getZoom();
+        var isWmsc = false;
+        if (layerObj.resolutions != null) {
+            isWmsc = true;
+            this.map.scales = null;
+            this.map.resolutions = layerObj.resolutions;
+            this.map.maxResolution = layerObj.resolutions[0];
+            this.map.minResolution = layerObj.resolutions[layerObj.resolutions.length - 1];
+        }
+
+        if (this.map.projection != layerObj.projection) {
+            newcenter = this._changeMapProjection(layerObj.layerInfo, layerObj.projection, isWmsc);
+        }
         this.map.setBaseLayer(layerObj.layer, true);
         this._selectBaseLayerElement(layerObj.layerElement);
+        if (newcenter) {
+            this._zoomToExtent();
+            this.map.setCenter(newcenter, oldZoom);
+        }
         this._updateOverlaysProjection(this.map.projection);
         this._disableOverlays();
         this.map.events.triggerEvent("changebaselayer");
-    },
 
+    },
     _getNumBaseLayers: function() {
         return this.baseLayers.length;
     },
-
     _getNumOverlays: function() {
         return this.overlays.length;
     },
-
     _selectBaseLayerElement: function(baselayerElement) {
-        for (var i=0; i<this.baseLayers.length; i++) {
+        for (var i = 0; i < this.baseLayers.length; i++) {
             this.baseLayers[i].layerElement.addClassName("deselected_baselayer");
         }
 
         baselayerElement.removeClassName("deselected_baselayer");
     },
-
     _updateOverlaysProjection: function(projection) {
-        for (var i=0; i<this.overlays.length; i++) {
+        for (var i = 0; i < this.overlays.length; i++) {
             var layerObj = this.overlays[i];
             var layer = layerObj.layer;
 
@@ -331,7 +368,8 @@ conwet.map.SelectedLayersManager = Class.create({
                     "layers": layer.params.LAYERS,
                     "format": layer.params.FORMAT,
                     "TRANSPARENT": "TRUE",
-                    "EXCEPTIONS": "application/vnd.ogc.se_inimage"
+                    "EXCEPTIONS": "application/vnd.ogc.se_inimage",
+                    projection: new OpenLayers.Projection(this.map.projection)
                 });
 
                 layerObj.projection = projection;
@@ -344,56 +382,76 @@ conwet.map.SelectedLayersManager = Class.create({
             }
         }
     },
-
-    _zoomToExtent: function(layerInfo) {
-        this.map.zoomToExtent(layerInfo.getExtent(this.map.projection));
-        this.map.zoomIn(); // Para solucionar bug de Openlayers
-        this.map.zoomOut();
+    _zoomToExtent: function() {
+        //this.map.zoomToExtent(layerInfo.getMaxExtent());
+        this.map.zoomToExtent(this.map.maxExtent);
     },
-
+            
+     _zoomToLayerExtent: function(layerInfo){
+        this.map.zoomToExtent(layerInfo.getExtent(this.map.projection));
+    },
     _disableOverlays: function(projection) {
-        for (var i=0; i<this.overlays.length; i++) {
+        for (var i = 0; i < this.overlays.length; i++) {
             var layerObj = this.overlays[i];
 
-            if (this.map.projection in layerObj.layerInfo.layer.bbox) {
+            if (layerObj.layerInfo.projections.indexOf(this.map.projection) !== -1){
                 layerObj.layerElement.removeClassName("disabled_layer");
+                layerObj.inputElement.disabled = false;
+                layerObj.layer.setVisibility(layerObj.inputElement.checked, true);
             }
             else {
                 layerObj.layerElement.addClassName("disabled_layer");
+                layerObj.inputElement.disabled = true;
+                layerObj.inputElement.checked = false;
+                layerObj.layer.setVisibility(false, true);
             }
         }
     },
+    _changeMapProjection: function(layerInfo, projection, isWmsc) {
 
-    _changeMapProjection: function(layerInfo, projection) {
-        this.map.projection = projection;
         this.map.units = new OpenLayers.Projection(projection).getUnits();
-
-        var scales = [Proj4js.maxScale[(this.map.units in (Proj4js.maxScale))?this.map.units: "m"]];
-        for (var i=0; i<18; i++) {
-            scales.push(scales[i]/2);
-        }
-        this.map.scales = scales;
-        //this.maxResolution = "auto";
-        //this.minResolution = "auto";
+        var newcenter;
 
         var transformer = new conwet.map.ProjectionTransformer();
-        this.map.maxExtent = layerInfo.getExtent(projection);//transformer.getMaxExtent(projection);
-    },
+        if (this.map.getCenter() != null)
+            newcenter = transformer.advancedTransform(this.map.getCenter(), this.map.projection, projection);
+        else
+            newcenter = new OpenLayers.LonLat(0, 0);
 
+        if (!isWmsc) {
+            this.map.resolutions = null;
+            this.map.maxResolution = null;
+            this.map.minResolution = null;
+            var scales = [Proj4js.maxScale[(this.map.units in (Proj4js.maxScale)) ? this.map.units : "m"]];
+
+            for (var i = 0; i < 18; i++) {
+                scales.push(scales[i] / 2);
+            }
+            this.map.scales = scales;
+        }
+        //this.maxResolution = "auto";
+        //this.minResolution = "auto";
+        if (isWmsc){
+            this.map.maxExtent = layerInfo.getMaxExtent(projection);
+        }else
+            this.map.maxExtent = layerInfo.getExtent(projection);
+        
+        this.map.projection = projection;
+        return newcenter;
+    },
     _selectLayerObj: function(layerObj, isBaseLayer) {
         this._deselectAllLayers();
 
         layerObj.layerElement.addClassName("selected");
         this._showDetails(layerObj, isBaseLayer);
     },
-
     _dropLayerObj: function(layerObj, isBaseLayer) {
         var index = this._getLayerIndex(layerObj.layer, isBaseLayer);
         if (index < 0)
             return;
 
-        var list = (isBaseLayer)? this.baseLayers: this.overlays;
-        list.splice(index,1);
+        var list = (isBaseLayer) ? this.baseLayers : this.overlays;
+        list.splice(index, 1);
 
         if (layerObj.layerElement.hasClassName("selected")) {
             this._clearDetails();
@@ -401,27 +459,24 @@ conwet.map.SelectedLayersManager = Class.create({
 
         layerObj.layerElement.remove();
     },
-
     _deselectAllLayers: function() {
-        for (var i=0; i<this.baseLayers.length; i++) {
+        for (var i = 0; i < this.baseLayers.length; i++) {
             this.baseLayers[i].layerElement.removeClassName("selected");
         }
 
-        for (var i=0; i<this.overlays.length; i++) {
+        for (var i = 0; i < this.overlays.length; i++) {
             this.overlays[i].layerElement.removeClassName("selected");
         }
     },
-
     _getLayerIndex: function(layer, isBaseLayer) {
-        var list = (isBaseLayer)? this.baseLayers: this.overlays;
+        var list = (isBaseLayer) ? this.baseLayers : this.overlays;
 
-        for (var i=0; i<list.length; i++) {
+        for (var i = 0; i < list.length; i++) {
             if ((list[i].layer.name == layer.name) && (list[i].layer.service == layer.service))
                 return i;
         }
         return -1;
     },
-
     _showDetails: function(layerObj, isBaseLayer) {
         this._clearDetails();
 
@@ -431,7 +486,7 @@ conwet.map.SelectedLayersManager = Class.create({
         var layerInfo = layerObj.layerInfo;
         var layer = layerObj.layer;
 
-        if (layer.CLASS_NAME != "OpenLayers.Layer.OSM") {
+        if (layer.CLASS_NAME != "OpenLayers.Layer.OSM" && layer.CLASS_NAME != "OpenLayers.Layer.Google") {
             var service = this.wmsManager.getService(layer.url);
             table.appendChild(this._createTableRow(_("Service"), document.createTextNode(service.getTitle())));
         }
@@ -479,7 +534,7 @@ conwet.map.SelectedLayersManager = Class.create({
             table.appendChild(this._createTableRow(_("Projection"), document.createTextNode(layerObj.projection)));
         }
 
-        table.appendChild(this._createTableRow(_("Queryable"), document.createTextNode((layerInfo.isQueryable())? _("Yes"): _("No"))));
+        table.appendChild(this._createTableRow(_("Queryable"), document.createTextNode((layerInfo.isQueryable()) ? _("Yes") : _("No"))));
         table.appendChild(this._createTableRow(_("Name"), document.createTextNode(layerInfo.getName())));
 
         if (layerInfo.getAbstract()) {
@@ -487,20 +542,19 @@ conwet.map.SelectedLayersManager = Class.create({
         }
 
         if (layerInfo.getLegendUrl()) {
-            var img = document.createElement("img");
-            img.src = layerInfo.getLegendUrl();
-            table.appendChild(this._createTableRow(_("Legend"), img));
+            this.gadget.legendUrl.send(layerInfo.getLegendUrl());
+            //var img = document.createElement("img");
+            //img.src = layerInfo.getLegendUrl();
+            //table.appendChild(this._createTableRow(_("Legend"), img));
         }
 
         $(table.lastChild).addClassName("last");
 
         this.detailsContainer.appendChild(table);
     },
-
     _clearDetails: function() {
         this.detailsContainer.innerHTML = "";
     },
-
     _createTableRow: function(title, value) {
         var tr = document.createElement("tr");
         var th = document.createElement("th");
@@ -511,5 +565,6 @@ conwet.map.SelectedLayersManager = Class.create({
         tr.appendChild(td);
         return tr;
     }
-
+    
+   
 });

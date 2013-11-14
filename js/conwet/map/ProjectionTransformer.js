@@ -32,7 +32,7 @@ conwet.map.ProjectionTransformer = Class.create({
         this.map     = (map)? map: null;
     },
 
-    normalize: function(point) {
+    normalize: function(point) {        
         return this.advancedTransform(point, this.map.getProjectionObject().projCode, this.DEFAULT.projCode);
     },
 
@@ -46,11 +46,12 @@ conwet.map.ProjectionTransformer = Class.create({
         }
         this._preloadProjection(projA);
         this._preloadProjection(projB);
-        return point.transform(new OpenLayers.Projection(projA), new OpenLayers.Projection(projB));
+        
+        return point.clone().transform(new OpenLayers.Projection(projA), new OpenLayers.Projection(projB));
     },
 
     getMaxExtent: function(projection) {
-        var bbox = [-180, -90, 180, 90];
+        var bbox = [-180,-90,180,90];
         return this.getExtent(bbox, 'EPSG:4326', projection);
     },
 
@@ -80,7 +81,8 @@ conwet.map.ProjectionTransformer = Class.create({
             var url = this.PROJECTIONS_SERVER_URL + srs + '/proj4js/';
 
             var projDef = MashupPlatform.http.makeRequest(url, options);
-            eval(projDef.transport.responseText + "alert(" + projDef.transport.responseText + ");");
+            eval(projDef.transport.responseText);// + "alert(" + projDef.transport.responseText + ");"
+            console.log();
         }
         catch (e) {
             //alert("Error");
