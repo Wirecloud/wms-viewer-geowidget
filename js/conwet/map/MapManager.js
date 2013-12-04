@@ -32,8 +32,8 @@ conwet.map.MapManager = Class.create({
             controls: [],
             displayProjection: new OpenLayers.Projection("EPSG:4326"),
             tileSize: new OpenLayers.Size(128,128),
-            zoomDuration: 10,
-            fractionalZoom: true            
+            zoomDuration: 10
+            //fractionalZoom: true            
         });
         
         this.cursorManager = options.cursorManager;
@@ -57,7 +57,7 @@ conwet.map.MapManager = Class.create({
         //this.map.addControl(new OpenLayers.Control.OverviewMap());
 
         //this.map.addControl(new OpenLayers.Control.MyScale()); //ScaleLine
-        this.map.addControl(new OpenLayers.Control.ScaleLine()); //    
+        this.map.addControl(new OpenLayers.Control.ScaleLine({geodesic:true})); //    
        
         
         // OWSManager
